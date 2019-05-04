@@ -21,8 +21,7 @@ env:
     - PYTHON=python3
 
 before_install:
-  - pip3 install pip --upgrade
-  - pip3 install setuptools
+  - pip3 install pip3 -U
   - pip3 install chainer==5.4.0
   - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
   - julia -e 'using PyCall'
