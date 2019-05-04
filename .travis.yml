@@ -15,12 +15,13 @@ addons:
     packages:
       - python3-numpy
       - python3-dev
-      - python3-pip
 env:
   matrix:
     - PYTHON=python3
 
 before_install:
+  python -c "import sys; print(sys.version)"
+  wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && rm get-pip.py
   - pip install --upgrade pip
   - pip install chainer==5.4.0
   - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
