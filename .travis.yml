@@ -1,15 +1,36 @@
 # Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
+dist: xenial
+
 os:
   - linux
-  - osx
+
 julia:
+  - 1.0
   - 1.1
   - nightly
+
+addons:
+  apt:
+    packages:
+      - python3-numpy
+      - python3-dev
+      - python3-pip
+env:
+  matrix:
+    - PYTHON=python3
+
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
+  include:
+    - &chainer
+      before_install:
+        - pip3 install chainer==5.4.0
+        - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
+        - julia -e 'using PyCall'
+        
 notifications:
   email: false
 after_success:

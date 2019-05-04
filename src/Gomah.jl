@@ -1,5 +1,6 @@
 module Gomah
-
-greet() = print("Hello World!")
+export chainer
+export train, test
+include("mnist.jl")
 
 end # module
