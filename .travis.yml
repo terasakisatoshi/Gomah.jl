@@ -20,16 +20,16 @@ env:
   matrix:
     - PYTHON=python3
 
+before_install:
+  - pip3 install chainer==5.4.0
+  - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
+  - julia -e 'using PyCall'
+
 matrix:
   allow_failures:
     - julia: nightly
   fast_finish: true
-  include:
-    - &chainer
-      before_install:
-        - pip3 install chainer==5.4.0
-        - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
-        - julia -e 'using PyCall'
+
         
 notifications:
   email: false
