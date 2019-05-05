@@ -10,7 +10,7 @@ This repo provides train/inference procedure of MNIST model known as Hello World
 These techniques are based on [Chainer](https://chainer.org/) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl).
 
 # Usage
-
+.
 This package is not registered as official julia package, so called 野良(nora), which means we should specify repository url:
 
 ```
@@ -30,5 +30,5 @@ epoch       main/loss   main/accuracy  validation/main/loss  validation/main/acc
 9           0.0746463   0.977655       0.0916977             0.972739                  23.1146       
 10          0.0663983   0.980598       0.0889726             0.972573                  25.5239    
 julia> predict()
-accuracy for test set = 0.9731 [%]
+accuracy for test set = 97.31 [%]
 ```
