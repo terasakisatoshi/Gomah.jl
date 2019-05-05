@@ -1,12 +1,10 @@
 using Gomah
 using Test
 
-@testset "Gomah.jl" begin
-    println("gomagoma kyukkyu")
+@testset "train" begin
     train()
 end
 
-@testset "chainercheck" begin
-
+@testset "predict" begin
     predict()
 end
