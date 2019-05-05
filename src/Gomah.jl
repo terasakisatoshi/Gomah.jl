@@ -34,25 +34,6 @@ function __init__()
     copy!(optimizers, chainer.optimizers)
 end
 
-#=
- initialize pyobject to avoid error when define Python Class 
-using @pydef mutable struct ...
-=# 
-
-function debug()
-    batchsize = 128
-    epochs = 10
-    train_set, _ = get_mnist()
-    N=pybuiltin(:len)(train_set)
-    train_set, val_set = chainer.datasets.split_dataset(
-            train_set,
-            convert(Int, 0.9*N),
-            Random.shuffle(collect(0:N-1))
-        )
-    train_iter = SerialIterator(train_set, batchsize)
-    test_iter = SerialIterator(val_set, batchsize, repeat=false, shuffle=false)
-    model = get_model()
-end
 
 include("mnist.jl")
 
