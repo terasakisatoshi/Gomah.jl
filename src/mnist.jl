@@ -93,6 +93,6 @@ function predict()
     end
 
     acc = counter/pybuiltin(:len)(test_set)
-    println("accuracy for test set = $(acc) [%]", )
+    println("accuracy for test set = $(100*acc) [%]", )
 end
 
