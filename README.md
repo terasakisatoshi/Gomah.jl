@@ -4,14 +4,15 @@
 [![Codecov](https://codecov.io/gh/terasakisatoshi/Gomah.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/terasakisatoshi/Gomah.jl)
 [![Coveralls](https://coveralls.io/repos/github/terasakisatoshi/Gomah.jl/badge.svg?branch=master)](https://coveralls.io/github/terasakisatoshi/Gomah.jl?branch=master)
 
+
 # About this repo
 
-This repo provides train/inference procedure of MNIST model known as Hello World of Deep Learning on [Julia](https://julialang.org/) runtime.
+- This repo provides train/inference procedure of MNIST model known as Hello World of Deep Learning on [Julia](https://julialang.org/) runtime.
 These techniques are based on [Chainer](https://chainer.org/) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl).
 
 # Usage
-.
-This package is not registered as official julia package, so called 野良(nora), which means we should specify repository url:
+
+- This package is not registered as official julia package, so called 野良(nora), which means we should specify repository url:
 
 ```
 $ julia
@@ -32,3 +33,9 @@ epoch       main/loss   main/accuracy  validation/main/loss  validation/main/acc
 julia> predict()
 accuracy for test set = 97.31 [%]
 ```
+
+# Why Gomah(ごまぁ）?
+
+- ごまごま(Goma Goma)
+- Inspired by [Menoh](https://github.com/pfnet-research/menoh)
+- Gomah.jl will be promoted as DNN inference library (in the future) in the future
