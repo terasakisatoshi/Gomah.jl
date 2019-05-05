@@ -31,12 +31,12 @@ function get_model()
             end
         end
 
-            function __call__(self, x)
-                h = F.relu(self.l1(x))
-                h = F.relu(self.l2(h))
-                h = self.l3(h)
-                return h
-            end
+        function __call__(self, x)
+            h = F.relu(self.l1(x))
+            h = F.relu(self.l2(h))
+            h = self.l3(h)
+            return h
+        end
     end
 
     L.Classifier(basemodel())
