@@ -1,19 +1,5 @@
 import Random
 
-#=
-using PyCall
-const chainer = pyimport("chainer")
-const math = pyimport("math")
-const np = pyimport("numpy")
-const Chain = chainer.Chain
-const F = chainer.functions
-const L = chainer.links
-const SerialIterator = chainer.iterators.SerialIterator
-const training = chainer.training
-const extensions = training.extensions
-const optimizers = chainer.optimizers
-=#
-
 function get_mnist()
     mnist = chainer.datasets.mnist
     train, test = mnist.get_mnist()
