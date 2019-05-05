@@ -38,4 +38,4 @@ accuracy for test set = 97.31 [%]
 
 - ごまごま(Goma Goma)
 - Inspired by [Menoh](https://github.com/pfnet-research/menoh)
-- Gomah.jl will be promoted as DNN inference library (in the future) in the future
+- Gomah.jl will be promoted as DNN inference library (in the future)
