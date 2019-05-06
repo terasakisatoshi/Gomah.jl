@@ -1,4 +1,4 @@
-# Gomah
+# Gomah.jl
 
 [![Build Status](https://travis-ci.org/terasakisatoshi/Gomah.jl.svg?branch=master)](https://travis-ci.org/terasakisatoshi/Gomah.jl)
 [![Codecov](https://codecov.io/gh/terasakisatoshi/Gomah.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/terasakisatoshi/Gomah.jl)
