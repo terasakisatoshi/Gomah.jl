@@ -1,5 +1,6 @@
 *.jl.*.cov
 *.jl.cov
 *.jl.mem
+*.npz
 .DS_Store
 /Manifest.toml
