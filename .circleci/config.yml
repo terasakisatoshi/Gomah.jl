@@ -24,6 +24,6 @@ jobs:
                       pkg"activate .";\
                       pkg"add Coverage"
                       pkg"test"; \
-                      using Coverge;
+                      using Coverage;
                       Codecov.submit(process_folder())'
 
