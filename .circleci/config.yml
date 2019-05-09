@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: julia:1.1.0
+    steps:
+      # we need to install git before checkout our code
+      - run:
+          name: install dependencies
+          command: |
+            apt update && apt install -y git python3 python3-dev wget
+            wget https://bootstrap.pypa.io/get-pip.py && python3 get-pip.py && rm get-pip.py
+      - checkout
+      - run:
+          name: install python dependencies
+          command: |
+            pip3 install --upgrade pip
+            pip3 install -r requirements.txt
+      - run:
+          name: test
+          command: |
+            julia -e 'ENV["PYTHON"]=Sys.which("python3");\
+                      using Pkg; pkg"activate .";\
+                      pkg"test"'
+      - run:
+          name: after_success
+          command: |
+            julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
+            julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
