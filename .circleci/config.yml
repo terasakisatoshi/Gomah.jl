@@ -19,11 +19,11 @@ jobs:
       - run:
           name: test
           command: |
-            julia --project -e 'ENV["PYTHON"]=Sys.which("python3");\
-                      using Pkg;\
-                      pkg"activate .";\
+            julia --project -e 'ENV["PYTHON"]=Sys.which("python3"); \
+                      using Pkg; \
+                      pkg"activate ."; \
                       pkg"add Coverage"
                       pkg"test"; \
-                      using Coverage;
-                      Codecov.submit(process_folder())'
-
+                      using Coverage; \
+                      Codecov.submit(process_folder()); \
+                      Coveralls.submit(process_folder())'
