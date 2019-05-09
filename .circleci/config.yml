@@ -19,7 +19,7 @@ jobs:
       - run:
           name: test
           command: |
-            julia -e 'ENV["PYTHON"]=Sys.which("python3");\
+            julia --project -e 'ENV["PYTHON"]=Sys.which("python3");\
                       using Pkg;\
                       pkg"activate .";\
                       pkg"add Coverage"
