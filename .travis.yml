@@ -6,9 +6,9 @@ os:
   - linux
 
 julia:
-#  - 1.0
+  - 1.0
   - 1.1
-#  - nightly
+  - nightly
 
 addons:
   apt:
