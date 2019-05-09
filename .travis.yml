@@ -25,7 +25,7 @@ before_install:
   - pip3 install --upgrade pip
   - pip3 install chainer==5.4.0 --user
   - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
-  - julia -e 'using PyCall'
+  - export PYTHON=$(which python)
 
 matrix:
   allow_failures:
