@@ -22,8 +22,3 @@ jobs:
             julia -e 'ENV["PYTHON"]=Sys.which("python3");\
                       using Pkg; pkg"activate .";\
                       pkg"test"'
-      - run:
-          name: after_success
-          command: |
-            julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
-            julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
