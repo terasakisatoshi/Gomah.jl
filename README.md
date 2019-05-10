@@ -37,7 +37,7 @@ accuracy for test set = 97.31 [%]
 
 # Why Gomah(ごまぁ）?
 
-- ごまごま(Goma Goma)
+- My favorite thing [ごまちゃん](http://gogo-gomachan.com/)
 - Inspired by [Menoh](https://github.com/pfnet-research/menoh)
 - Gomah.jl will be promoted as DNN inference library (in the future)
 
