@@ -17,7 +17,7 @@ These techniques are based on [Chainer](https://chainer.org/) and [PyCall.jl](ht
 
 ```
 $ julia
-pkg> add git@github.com:terasakisatoshi/Gomah.jl.git
+pkg> add https://github.com/terasakisatoshi/Gomah.jl.git
 julia> using Gomah
 julia> train()
 epoch       main/loss   main/accuracy  validation/main/loss  validation/main/accuracy  elapsed_time
