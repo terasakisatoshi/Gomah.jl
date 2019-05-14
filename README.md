@@ -41,7 +41,7 @@ accuracy for test set = 97.31 [%]
 - Inspired by [Menoh](https://github.com/pfnet-research/menoh)
 - Gomah.jl will be promoted as DNN inference library (in the future)
 
-# Acknowledgment
+# Acknowledgement
 
 - Script for training MNIS is based on [this notebook](https://gist.github.com/regonn/d2acf5a20a1b3ec34d8e483af510b4a3).
   - See also [Julia で Chainer を動かすぞ💪](https://speakerdeck.com/regonn/julia-de-chainer-wodong-kasuzo?slide=2)
