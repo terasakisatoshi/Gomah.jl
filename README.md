@@ -1,5 +1,7 @@
 # Gomah.jl
 
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://terasakisatoshi.github.io/Gomah.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://terasakisatoshi.github.io/Gomah.jl/dev)
 [![CircleCI](https://circleci.com/gh/terasakisatoshi/Gomah.jl/tree/master.svg?style=svg)](https://circleci.com/gh/terasakisatoshi/Gomah.jl/tree/master)
 [![Build Status](https://travis-ci.org/terasakisatoshi/Gomah.jl.svg?branch=master)](https://travis-ci.org/terasakisatoshi/Gomah.jl)
 [![Codecov](https://codecov.io/gh/terasakisatoshi/Gomah.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/terasakisatoshi/Gomah.jl)
