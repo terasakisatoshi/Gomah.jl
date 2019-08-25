@@ -8,7 +8,7 @@ end
 
 function get_model()
     basemodel = @pydef mutable struct MNIST <: Chain
-        function __init__(self, n_hidden=100)
+        function __init__(self, n_hidden = 100)
             pybuiltin(:super)(MNIST, self).__init__()
             @pywith self.init_scope() begin
                 self.l1 = L.Linear(nothing, n_hidden)
@@ -33,27 +33,38 @@ function train()
     batchsize = 128
     epochs = 10
     train_set, _ = get_mnist()
-    N=pybuiltin(:len)(train_set)
+    N = pybuiltin(:len)(train_set)
     train_set, val_set = chainer.datasets.split_dataset(
-            train_set,
-            convert(Int, 0.9*N),
-            Random.shuffle(collect(0:N-1))
-        )
+        train_set,
+        convert(Int, 0.9 * N),
+        Random.shuffle(collect(0:N-1))
+    )
     train_iter = SerialIterator(train_set, batchsize)
-    test_iter = SerialIterator(val_set, batchsize, repeat=false, shuffle=false)
+    test_iter = SerialIterator(
+        val_set,
+        batchsize,
+        repeat = false,
+        shuffle = false
+    )
     model = get_model()
     optimizer = optimizers.MomentumSGD()
     optimizer.setup(model)
     updater = training.updaters.StandardUpdater(train_iter, optimizer)
-    trainer = training.Trainer(updater, (epochs, "epoch"), out="result")
+    trainer = training.Trainer(updater, (epochs, "epoch"), out = "result")
     trainer.extend(extensions.LogReport())
     trainer.extend(extensions.Evaluator(test_iter, model))
-    trainer.extend(extensions.PrintReport(
-        ["epoch", "main/loss", "main/accuracy",
-         "validation/main/loss", "validation/main/accuracy", "elapsed_time"])
+    trainer.extend(extensions.PrintReport([
+        "epoch",
+        "main/loss",
+        "main/accuracy",
+        "validation/main/loss",
+        "validation/main/accuracy",
+        "elapsed_time"
+    ]))
+    trainer.extend(
+        extensions.snapshot_object(model, filename = "bestmodel.npz"),
+        trigger = training.triggers.MinValueTrigger("validation/main/loss")
     )
-    trainer.extend(extensions.snapshot_object(model, filename="bestmodel.npz"),
-                   trigger=training.triggers.MinValueTrigger("validation/main/loss"))
     trainer.run()
 end
 
@@ -69,7 +80,7 @@ function predict()
         @pywith chainer.function.no_backprop_mode() begin
             for t in test_set
                 img, label = t
-                y = model.predictor(np.expand_dims(img,axis=0))
+                y = model.predictor(np.expand_dims(img, axis = 0))
                 predict = np.argmax(np.squeeze(y.array))
                 if predict == label
                     counter += 1
@@ -78,7 +89,6 @@ function predict()
         end
     end
 
-    acc = counter/pybuiltin(:len)(test_set)
-    println("accuracy for test set = $(100*acc) [%]", )
+    acc = counter / pybuiltin(:len)(test_set)
+    println("accuracy for test set = $(100*acc) [%]",)
 end
-
