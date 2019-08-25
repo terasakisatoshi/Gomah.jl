@@ -1,11 +1,15 @@
 module Gomah
 
 using PyCall
+using PyCall: @pywith
+export @pywith
 
 export chainer
 # defined in mnist.jl
 export train, predict
 export debug, get_model
+export reversedims
+export ch2dense, ch2conv, ch2dwconv, ch2batchnorm
 
 # chainer object
 const chainer = PyNULL()
@@ -36,5 +40,6 @@ end
 
 
 include("mnist.jl")
+include("chainer2flux.jl")
 
 end # module
