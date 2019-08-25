@@ -1,5 +1,5 @@
 using Gomah
-using Gomah: L, np
+using Gomah: L, np, reversedims
 using PyCall
 using Flux
 using Statistics
@@ -94,7 +94,21 @@ function myres()
 end
 
 
+py"""
+import chainercv
+import numpy as np
+img=chainercv.utils.read_image("pineapple.png",np.float32)
+img=chainercv.transforms.resize(img,(224,224))
+_imagenet_mean = np.array(
+            [123.15163084, 115.90288257, 103.0626238],
+            dtype=np.float32
+        )[:, np.newaxis, np.newaxis]
+img=img-_imagenet_mean
+img=np.expand_dims(img,axis=0)
+"""
 r = myres()
 Flux.testmode!(r, true)
-ret = r(rand(Float32, 224, 224, 3, 1))
-size(ret)
+img=reversedims(py"img")
+@show size(img)
+ret = r(img)
+@show argmax(ret), 100ret[argmax(ret)]
