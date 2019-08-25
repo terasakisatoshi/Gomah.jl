@@ -20,7 +20,7 @@ function ch2conv(link,σ=Flux.identity)
     if py"hasattr"(link.b, :array)
         b = reversedims(link.b.array)
     else
-        b = zeros(DTYPE,size(W)[3])
+        b = zeros(DTYPE,size(W)[4])
     end
     pad = link.pad
     Conv(W, b, σ, pad = pad)

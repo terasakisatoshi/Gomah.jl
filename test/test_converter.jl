@@ -40,9 +40,36 @@ function test_ch2conv()
     dummyX = np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
     chret = reversedims(chconv(dummyX).array)
     flconv = ch2conv(chconv)
-    #flret = flconv(ones(DTYPE, inW, inH, INCH, BSIZE))
-    #@test size(flret) == size(chret)
-    #@test all(isapprox.(flret, chret))
+    flret = flconv(ones(DTYPE, inW, inH, INCH, BSIZE))
+    @test size(flret) == size(chret)
+    @test all(isapprox.(flret, chret))
+end
+
+function test_ch2conv_nobias()
+    # get instance of Convolution2D
+    INCH = 3
+    OUTCH = 8
+    inH = 30
+    inW = 30
+    BSIZE = 1
+    KSIZE = 3
+    pad = 1
+    s = 1
+    chconv = Gomah.L.Convolution2D(
+        ksize = KSIZE,
+        pad = pad,
+        stride = s,
+        in_channels = INCH,
+        out_channels = OUTCH,
+        nobias=true,
+    )
+    # pass dummy data to create computation graph
+    dummyX = np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
+    chret = reversedims(chconv(dummyX).array)
+    flconv = ch2conv(chconv)
+    flret = flconv(ones(DTYPE, inW, inH, INCH, BSIZE))
+    @test size(flret) == size(chret)
+    @test all(isapprox.(flret, chret))
 end
 
 function test_ch2dwconv()
@@ -90,6 +117,7 @@ end
 @testset "converter" begin
     test_ch2dense()
     test_ch2conv()
+    test_ch2conv_nobias()
     test_ch2dwconv()
     test_ch2bn()
 end
