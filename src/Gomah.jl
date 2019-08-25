@@ -9,7 +9,7 @@ export chainer
 export train, predict
 export debug, get_model
 export reversedims
-export ch2dense, ch2conv, ch2dwconv, ch2batchnorm
+export ch2dense, ch2conv, ch2dwconv, ch2bn
 
 # chainer object
 const chainer = PyNULL()
