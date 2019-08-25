@@ -1,7 +1,6 @@
 using Gomah
 using Gomah: L, np, @pywith
 using Flux
-using PyCall: PyCall
 const DTYPE = Float32
 
 using Test
@@ -77,7 +76,7 @@ function test_ch2batchnorm()
     BSIZE = 1
     dummyX = np.ones((BSIZE, SIZE))
     chbn = L.BatchNormalization(size = SIZE)
-    PyCall.@pywith chainer.using_config("train", false) begin
+    @pywith chainer.using_config("train", false) begin
         chret = reversedims(chbn(dummyX).array)
         flbn = ch2batchnorm(chbn, SIZE)
         Flux.testmode!(flbn)
