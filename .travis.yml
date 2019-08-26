@@ -23,7 +23,7 @@ before_install:
   - python3 -c "import sys; print(sys.version)"
   - wget https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py && rm get-pip.py
   - pip3 install --upgrade pip
-  - pip3 install numpy cython chainer==6.2.0 chainercv=0.13.0 --user
+  - pip3 install numpy cython chainer==6.2.0 chainercv==0.13.0 --user
   - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
   - julia -e 'using PyCall'
 
