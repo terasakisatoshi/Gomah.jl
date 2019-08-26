@@ -12,6 +12,7 @@
 
 - This repo provides train/inference procedure of MNIST model known as Hello World of Deep Learning on [Julia](https://julialang.org/) runtime.
 These techniques are based on [Chainer](https://chainer.org/) and [PyCall.jl](https://github.com/JuliaPy/PyCall.jl).
+- NEW: Add feature to convert ResNet50/Chainer -> ResNet50/Flux.jl
 
 # Usage
 
