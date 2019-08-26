@@ -36,7 +36,6 @@ julia> using Gomah
 
 ```
 $ julia
-pkg> add https://github.com/terasakisatoshi/Gomah.jl.git
 julia> using Gomah
 julia> train()
 epoch       main/loss   main/accuracy  validation/main/loss  validation/main/accuracy  elapsed_time
@@ -108,7 +107,7 @@ flprob = 100ret[argmax(ret)]
 # Python: The index of array begins with 0
 # Julia: THe index of array begin with 1
 @show Int(py"chidx") == flidx[1]-1
-# For some reason converted model output a little different output.
+# For some reason, our converted model outputs a slightly different output.
 @show Float32(py"chprob") - flprob
 ```
 
