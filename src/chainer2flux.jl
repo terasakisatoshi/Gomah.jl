@@ -48,6 +48,7 @@ function ch2bn(link, λ=Flux.identity)
     bn.β = β
     bn.γ = γ
     bn.ϵ = ϵ
+    bn.μ = μ
     bn.σ² = σ²
     return bn
 end
