@@ -7,7 +7,7 @@ end
 
 
 function get_model()
-    basemodel = @pydef mutable struct MNIST <: Chain
+    basemodel = @pydef mutable struct MNIST <: chainer.Chain
         function __init__(self, n_hidden = 100)
             pybuiltin(:super)(MNIST, self).__init__()
             @pywith self.init_scope() begin

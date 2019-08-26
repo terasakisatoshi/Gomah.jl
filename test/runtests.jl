@@ -1,10 +1,4 @@
-using Gomah
 using Test
 
-@testset "train" begin
-    train()
-end
-
-@testset "predict" begin
-    predict()
-end
+include("test_mnist.jl")
+include("test_converter.jl")
