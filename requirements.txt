@@ -1,2 +1,4 @@
+numpy
+cython
 chainer==6.2.0
 chainercv==0.13.1
