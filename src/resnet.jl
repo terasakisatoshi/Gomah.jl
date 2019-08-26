@@ -13,11 +13,13 @@ function Conv2DBNActiv(link)
     if link.activ == nothing
         activ = Flux.identity
     else
-        #activ = activations[link.activ.__name__]
-        activ = Flux.relu
+        activ = activations[link.activ.__name__]
+        #activ = Flux.relu
     end
     bn = ch2bn(link.bn, activ)
-    Chain([conv, bn]...)
+    c=Chain([conv, bn]...)
+    Flux.testmode!(c,true)
+    return c
 end
 
 struct BottleNeckA
@@ -65,38 +67,51 @@ function ResBlock(link)
     Chain(layers...)
 end
 
-struct MyRes
+struct ResNet
     layers
+    layer_names
 end
 
-num = 50
-const PyResNet = chainercv.links.model.resnet.ResNet
-const resnet = PyResNet(num, pretrained_model = "imagenet")
-
-function myres()
-    dummyX = np.ones((1, 3, 224, 224), dtype = np.float32)
-    resnet(dummyX)
+function ResNet(num::Int)
+    PyResNet = chainercv.links.model.resnet.ResNet
+    pyresnet = PyResNet(num, pretrained_model = "imagenet")
+    #dummyX = np.ones((1, 3, 224, 224), dtype = np.float32)
+    #resnet(dummyX)
     #resnet101=ResNet(101, pretrained_model="imagenet")
     #resnet152=ResNet(152, pretrained_model="imagenet")
-    @show resnet.layer_names
-    Chain(
-        Conv2DBNActiv(resnet.conv1),
+    @show pyresnet.layer_names
+    layers=[
+        Conv2DBNActiv(pyresnet.conv1),
         MaxPool((3, 3), pad = (1, 1), stride = (2, 2)),
-        ResBlock(resnet.res2),
-        ResBlock(resnet.res3),
-        ResBlock(resnet.res4),
-        ResBlock(resnet.res5),
+        ResBlock(pyresnet.res2),
+        ResBlock(pyresnet.res3),
+        ResBlock(pyresnet.res4),
+        ResBlock(pyresnet.res5),
         x -> mean(x, dims = (1, 2)),
         x -> reshape(x, :, size(x, 4)),
-        ch2dense(resnet.fc6),
+        ch2dense(pyresnet.fc6),
         softmax,
-    )
+    ]
+    ResNet(layers, pyresnet.layer_names)
 end
 
+function (res::ResNet)(x)
+    h = x
+    d=Dict()
+    for (name, lay) in zip(res.layer_names, res.layers)
+        h = lay(h)
+        d[name] = h
+    end
+    return h,d
+end
 
 py"""
+import chainer
 import chainercv
 import numpy as np
+num = 50
+PyResNet = chainercv.links.model.resnet.ResNet
+resnet = PyResNet(num, pretrained_model = "imagenet")
 img=chainercv.utils.read_image("pineapple.png",np.float32)
 img=chainercv.transforms.resize(img,(224,224))
 _imagenet_mean = np.array(
@@ -105,10 +120,26 @@ _imagenet_mean = np.array(
         )[:, np.newaxis, np.newaxis]
 img=img-_imagenet_mean
 img=np.expand_dims(img,axis=0)
+resnet.pick=resnet.layer_names
+with chainer.using_config('train', False):
+    pyret=resnet(img)
+    result=np.squeeze(pyret[-1].array)
+    idx=np.argmax(result)
+    print(idx)
+    print(result[idx])
 """
-r = myres()
+
+num = 50
+r = ResNet(num)
 Flux.testmode!(r, true)
-img=reversedims(py"img")
+img=reversedims(py"img");
 @show size(img)
-ret = r(img)
+ret,d = r(img)
 @show argmax(ret), 100ret[argmax(ret)]
+
+pyret0=reversedims(py"pyret[0].array");
+using Test
+@assert size(pyret0)==size(d["conv1"])
+
+pyret0[:,:,1,1]
+d["conv1"][:,:,1,1]
