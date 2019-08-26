@@ -1,1 +1,2 @@
-chainer==5.4.0
+chainer==6.2.0
+chainercv==0.13.1
