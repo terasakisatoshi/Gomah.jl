@@ -24,6 +24,7 @@ before_install:
   - wget https://bootstrap.pypa.io/get-pip.py && sudo python3 get-pip.py && rm get-pip.py
   - pip3 install --upgrade pip
   - pip3 install numpy cython chainer==6.2.0 chainercv==0.13.0 --user
+  - python3 -c "res=chainercv.links.model.resnet.ResNet; res(50, pretrained_model = 'imagenet')"
   - julia -e 'ENV["PYTHON"]=Sys.which("python3"); using Pkg; Pkg.add("PyCall")'
   - julia -e 'using PyCall'
 
