@@ -81,10 +81,9 @@ struct ResNet
             ResBlock(pyresnet.res3),
             ResBlock(pyresnet.res4),
             ResBlock(pyresnet.res5),
-            x -> mean(x, dims = (1, 2)),
-            x -> reshape(x, :, size(x, 4)),
+            x -> reshape(mean(x, dims = (1, 2)), :, size(x, 4)),
             ch2dense(pyresnet.fc6),
-            softmax,
+            Flux.softmax,
         ]
         new(layers, pyresnet.layer_names)
     end
