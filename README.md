@@ -45,5 +45,7 @@ accuracy for test set = 97.31 [%]
 
 # Acknowledgement
 
-- Script for training MNIS is based on [this notebook](https://gist.github.com/regonn/d2acf5a20a1b3ec34d8e483af510b4a3).
+- Script for training MNIST is based on [this notebook](https://gist.github.com/regonn/d2acf5a20a1b3ec34d8e483af510b4a3).
   - See also [Julia で Chainer を動かすぞ💪](https://speakerdeck.com/regonn/julia-de-chainer-wodong-kasuzo?slide=2)
+- Construct Chain is based on [Flux.jl](https://github.com/FluxML/Flux.jl)
+- Basic implementation of ResNet is taken from [ChainerCV](https://github.com/chainer/chainercv) project.
