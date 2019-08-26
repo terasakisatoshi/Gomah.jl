@@ -23,7 +23,8 @@ function ch2conv(link,σ=Flux.identity)
         b = zeros(DTYPE,size(W)[4])
     end
     pad = link.pad
-    Conv(W, b, σ, pad = pad)
+    s = link.stride
+    Conv(W, b, σ, pad = pad, stride=s)
 end
 
 function ch2dwconv(link,σ=Flux.identity)
