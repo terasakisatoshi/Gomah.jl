@@ -15,7 +15,23 @@ These techniques are based on [Chainer](https://chainer.org/) and [PyCall.jl](ht
 
 # Usage
 
+## How to install
 - This package is not registered as official julia package, so called 野良(nora), which means we should specify repository url:
+- Note that Package `Gomah.jl` depends on `PyCall.jl`. So before installing, We recommend set environment variable in Julia.
+
+```julia
+$ julia
+julia> ENV["PYTHON"] = Sys.which("python3")
+pkg> add https://github.com/terasakisatoshi/Gomah.jl.git
+julia> using Gomah
+```
+
+## Call Chainer script from Julia via `Gomah.jl`
+
+- `PyCall.jl` provides interface between Python and Julia.
+- This means you can construct training script of Chainer on Julia environment.
+- If you are familiar with some Deep learnig framework, checkout our `src/mnist.jl`.
+- We provide an example of training MNIST classifier.
 
 ```
 $ julia
@@ -35,6 +51,64 @@ epoch       main/loss   main/accuracy  validation/main/loss  validation/main/acc
 10          0.0663983   0.980598       0.0889726             0.972573                  25.5239    
 julia> predict()
 accuracy for test set = 97.31 [%]
+```
+
+# Convert ResNet/Chainer -> ResNet/Flux.jl
+
+- We found the structure (shape) of parameter i.e. weight of Chainer is similar that of Flux.
+- The structure of weight of Convolution of Chainer is `NCHW`. On the other hand, Conv of Flux.jl has weight its shape is `WHCN`, where `N` is batchsize, `H` (resp. `W`) is height (resp. width) of kernel and `C` is num of channel.
+- We provided script to convert ResNet50 of Chainer to that of Flux.jl
+- Here is a example of How to use converted model. What you have to do is ...
+  - Install chainer and chainercv
+  - Install Flux.jl, PyCall, Gomah.jl
+  - Prepare sample RGB image. e.g. `pineapple.png`
+  - Run the following the script.
+
+```julia
+using Gomah
+using Gomah: L, np, reversedims
+using Flux
+using PyCall
+
+py"""
+import chainer
+import chainercv
+import numpy as np
+num = 50
+PyResNet = chainercv.links.model.resnet.ResNet
+resnet = PyResNet(num, pretrained_model = "imagenet")
+img=chainercv.utils.read_image("pineapple.png",np.float32)
+img=chainercv.transforms.resize(img,(224,224))
+_imagenet_mean = np.array(
+            [123.15163084, 115.90288257, 103.0626238],
+            dtype=np.float32
+        )[:, np.newaxis, np.newaxis]
+img=img-_imagenet_mean
+img=np.expand_dims(img,axis=0)
+resnet.pick=resnet.layer_names
+with chainer.using_config('train', False):
+    pyret=resnet(img)
+    result=np.squeeze(pyret[-1].array)
+    chidx=int(np.argmax(result))
+    chprob=100*float(result[chidx])
+    print(chidx)
+    print(chprob)
+"""
+
+num = 50
+myresnet = ResNet(num)
+Flux.testmode!(myresnet, true)
+img = reversedims(py"img");
+@show size(img)
+ret, d = myresnet(img);
+flidx = argmax(ret)
+flprob = 100ret[argmax(ret)]
+@show flidx,flprob
+# Python: The index of array begins with 0
+# Julia: THe index of array begin with 1
+@show Int(py"chidx") == flidx[1]-1
+# For some reason converted model output a little different output.
+@show Float32(py"chprob") - flprob
 ```
 
 # Why Gomah(ごまぁ）?
