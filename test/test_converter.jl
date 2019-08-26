@@ -1,7 +1,8 @@
 using Gomah
-using Gomah: L, np, @pywith
+using Gomah: L, np, @pywith, chainercv
 using Flux
 using Statistics
+
 const DTYPE = Float32
 
 using Test
@@ -76,7 +77,7 @@ function test_ch2conv_nobias()
     @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
 end
 
-function test_resnetch2conv()
+function test_resnetconv1ch2conv()
     # get instance of Convolution2D
     INCH = 2
     OUTCH = 3
@@ -148,11 +149,37 @@ function test_ch2bn()
 end
 
 
+@testset "bn parameter test" begin
+    PyResNet = chainercv.links.model.resnet.ResNet
+    num=50
+    pyresnet = PyResNet(num, pretrained_model = "imagenet")
+    dummyX = rand(Float32,(1, 64,10,10))
+    dummyX = zeros(Float32,(1,64,10,10))
+    pybn = pyresnet.conv1.bn
+    @pywith chainer.using_config("train", false) begin
+        chret = reversedims(pybn(dummyX).array)
+        flbn = ch2bn(pybn)
+        Flux.testmode!(flbn, true)
+        flret = flbn(reversedims(dummyX))
+        
+        β = flbn.β 
+        γ = flbn.γ 
+        μ = flbn.μ 
+        σ² = flbn.σ²
+        ϵ = flbn.ϵ
+        @test isapprox(β, pybn.beta.array)
+        @test isapprox(γ, pybn.gamma.array)
+        @test isapprox(μ, pybn.avg_mean)
+        @test isapprox(σ², pybn.avg_var)
+        @test isapprox(ϵ, pybn.eps)
+    end
+end
+
 @testset "converter" begin
     test_ch2dense()
     test_ch2conv()
     test_ch2conv_nobias()
-    test_resnetch2conv()
+    test_resnetconv1ch2conv()
     test_ch2dwconv()
     test_ch2bn()
 end
