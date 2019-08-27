@@ -18,7 +18,8 @@ function test_ch2dense()
     fldense = ch2dense(chlinear)
     flret = fldense(reversedims(dummyX))
     @test size(flret) == size(chret)
-    @show err = mean(abs.(flret .- chret))
+    @show maximum(abs.(flret .- chret))
+    @show typeof.((fldense.W,fldense.b))
     @test all(isapprox.(flret, chret))
 end
 
@@ -45,7 +46,8 @@ function test_ch2conv()
     flconv = ch2conv(chconv)
     flret = flconv(ones(DTYPE, inW, inH, INCH, BSIZE))
     @test size(flret) == size(chret)
-    @show err = mean(abs.(flret .- chret))
+    @show maximum(abs.(flret .- chret))
+    @show typeof.((flconv.weight,flconv.bias))
     @test all(isapprox.(flret, chret))
 end
 
@@ -129,6 +131,7 @@ function test_ch2dwconv()
     flret = fldwconv(reversedims(dummyX))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
+    @show typeof.((fldwconv.weight,fldwconv.bias))
     @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
 end
 
@@ -140,7 +143,7 @@ function test_ch2bn()
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(chbn(dummyX).array)
         flbn = ch2bn(chbn)
-        Flux.testmode!(flbn)
+        Flux.testmode!(flbn, true)
         flret = flbn(reversedims(dummyX))
         @test size(flret) == size(chret)
         @show maximum(abs.(flret .- chret))
@@ -167,6 +170,7 @@ end
         μ = flbn.μ 
         σ² = flbn.σ²
         ϵ = flbn.ϵ
+        @show typeof.((β,γ,μ,σ²,ϵ))
         @test isapprox(β, pybn.beta.array)
         @test isapprox(γ, pybn.gamma.array)
         @test isapprox(μ, pybn.avg_mean)

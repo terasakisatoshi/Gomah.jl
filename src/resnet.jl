@@ -1,21 +1,34 @@
-using Flux
+import Flux
 using Statistics
 using Gomah: chainercv
 
 activations = Dict("relu" => Flux.relu)
 
-function Conv2DBNActiv(link)
-    conv = ch2conv(link.conv)
-    if link.activ == nothing
-        activ = Flux.identity
-    else
-        activ = activations[link.activ.__name__]
-        #activ = Flux.relu
+
+
+struct Conv2DBNActiv
+    conv
+    bn
+    function Conv2DBNActiv(link::PyObject)
+        conv = ch2conv(link.conv)
+        if link.activ == nothing
+            activ = Flux.identity
+        else
+            activ = activations[link.activ.__name__]
+            #activ = Flux.relu
+        end
+        bn = ch2bn(link.bn, activ)
+        new(conv,bn)        
     end
-    bn = ch2bn(link.bn, activ)
-    c = Chain([conv, bn]...)
-    Flux.testmode!(c, true)
-    return c
+end
+
+Flux.@treelike Conv2DBNActiv
+function Flux.testmode!(c::Conv2DBNActiv)
+    Flux.testmode!(c.bn)
+end
+
+function (layer::Conv2DBNActiv)(x)
+    x |> layer.conv |> layer.bn
 end
 
 struct BottleNeckA
@@ -24,7 +37,7 @@ struct BottleNeckA
     function BottleNeckA(link::PyObject)
         layers = Conv2DBNActiv.([link.conv1, link.conv2, link.conv3])
         residual_conv = Conv2DBNActiv(link.residual_conv)
-        new(Chain(layers...), residual_conv)
+        new(Chain(layers...), Chain(residual_conv))
     end
 end
 
@@ -37,6 +50,10 @@ function (bottleneck::BottleNeckA)(x)
     return y
 end
 
+function Flux.testmode!(bottleneck::BottleNeckA)
+    Flux.testmode!.(bottleneck.layers)
+    Flux.testmode!.(bottleneck.residual_conv)
+end
 
 struct BottleNeckB
     chain
@@ -52,6 +69,8 @@ function (bottleneckB::BottleNeckB)(x)
     h = bottleneckB.chain(x)
     Flux.relu.(h .+ x)
 end
+
+Flux.testmode!(bottleneck::BottleNeckB)=Flux.testmode!(bottleneck.chain)
 
 function ResBlock(link)
     layers = Any[]
@@ -76,7 +95,7 @@ struct ResNet
         @show pyresnet.layer_names
         layers = [
             Conv2DBNActiv(pyresnet.conv1),
-            MaxPool((3, 3), pad = (1, 1), stride = (2, 2)),
+            MaxPool((3,3),pad=(0,1,0,1),stride=(2,2)),
             ResBlock(pyresnet.res2),
             ResBlock(pyresnet.res3),
             ResBlock(pyresnet.res4),
@@ -98,3 +117,5 @@ function (res::ResNet)(x)
     end
     return h, d
 end
+
+Flux.testmode!(resnet::ResNet) = Flux.testmode!(resnet.layers)

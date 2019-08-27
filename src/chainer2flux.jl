@@ -34,7 +34,8 @@ function ch2dwconv(link,σ=Flux.identity)
     W = W[end:-1:1, end:-1:1, :, :]
     b = reversedims(link.b.array)
     pad = link.pad
-    DepthwiseConv(W, b, σ, pad = pad)
+    s = link.stride
+    DepthwiseConv(W, b, σ, pad = pad, stride=s)
 end
 
 function ch2bn(link, λ=Flux.identity)

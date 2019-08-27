@@ -70,6 +70,9 @@ using Gomah: L, np, reversedims
 using Flux
 using PyCall
 
+using Test
+using BenchmarkTools
+
 py"""
 import chainer
 import chainercv
@@ -95,20 +98,40 @@ with chainer.using_config('train', False):
     print(chprob)
 """
 
-num = 50
-myresnet = ResNet(num)
-Flux.testmode!(myresnet, true)
-img = reversedims(py"img");
-@show size(img)
-ret, d = myresnet(img);
-flidx = argmax(ret)
-flprob = 100ret[argmax(ret)]
-@show flidx,flprob
-# Python: The index of array begins with 0
-# Julia: The index of array begins with 1
-@show Int(py"chidx") == flidx[1]-1
-# For some reason, our converted model outputs a slightly different output.
-@show Float32(py"chprob") - flprob
+@testset "regression" begin
+    num = 50
+    myres = ResNet(num)
+    Flux.testmode!.(myres.layers)
+    img = reversedims(py"img")
+    @show size(img), typeof(img)
+    ret, name2data = myres(img)
+    for (i,name) in enumerate(myres.layer_names)
+        pyr = reversedims(py"pyret[$i-1].array")
+        flr = name2data[name]
+        @show name, size(flr)
+        @test size(pyr) == size(flr)
+        @show maximum(abs.(pyr .- flr))
+    end
+    flidx = argmax(ret)
+    flprob = 100ret[argmax(ret)]
+    @show flidx,flprob
+    @test Int(py"chidx") == flidx[1]-1
+    @show Float32(py"chprob") - flprob
+end
+
+@testset "benchmark" begin
+    num=50
+    img = reversedims(py"img")
+    myres = ResNet(num)
+    chainmodel = Chain(myres.layers...)
+    Flux.testmode!(chainmodel)
+    @time chainmodel(img)
+    @time chainmodel(img)
+    @time chainmodel(img)
+    @time chainmodel(img)
+    @time chainmodel(img)
+    @time chainmodel(img)
+end
 ```
 
 # Why Gomah(ごまぁ）?
