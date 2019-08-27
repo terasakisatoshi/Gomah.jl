@@ -105,7 +105,7 @@ flidx = argmax(ret)
 flprob = 100ret[argmax(ret)]
 @show flidx,flprob
 # Python: The index of array begins with 0
-# Julia: THe index of array begin with 1
+# Julia: The index of array begins with 1
 @show Int(py"chidx") == flidx[1]-1
 # For some reason, our converted model outputs a slightly different output.
 @show Float32(py"chprob") - flprob
