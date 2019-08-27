@@ -51,8 +51,21 @@ end
     end
 end
 
-
 @testset "BottleNeckA" begin
+    dummyX = rand(Float32, (1,64, 56, 56))
+    pyres2A = resnet.res2.a
+    flres2A = BottleNeckA(pyres2A)
+    Flux.testmode!(flres2A, true)
+    @pywith chainer.using_config("train", false) begin
+        chret = reversedims(pyres2A(dummyX).array)
+        flret = flres2A(reversedims(dummyX))
+        @test size(flret) == size(chret)
+        @show maximum(abs.(flret-chret))
+        @test all(isapprox.(flret, chret, atol=1e-4))
+    end
+end
+
+@testset "ResBlock" begin
     dummyX = rand(Float32, (1,64, 56, 56))
     pyres2 = resnet.res2
     flres2 = ResBlock(pyres2)
