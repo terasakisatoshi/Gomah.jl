@@ -51,8 +51,8 @@ function (bottleneck::BottleNeckA)(x)
 end
 
 function Flux.testmode!(bottleneck::BottleNeckA)
-    Flux.testmode!(bottleneck.layers)
-    Flux.testmode!(bottleneck.residual_conv)
+    Flux.testmode!.(bottleneck.layers)
+    Flux.testmode!.(bottleneck.residual_conv)
 end
 
 struct BottleNeckB
@@ -69,6 +69,8 @@ function (bottleneckB::BottleNeckB)(x)
     h = bottleneckB.chain(x)
     Flux.relu.(h .+ x)
 end
+
+Flux.testmode!(bottleneck::BottleNeckB)=Flux.testmode!(bottleneck.chain)
 
 function ResBlock(link)
     layers = Any[]
@@ -93,7 +95,7 @@ struct ResNet
         @show pyresnet.layer_names
         layers = [
             Conv2DBNActiv(pyresnet.conv1),
-            MaxPool((3, 3), pad = (1, 1), stride = (2, 2)),
+            MaxPool((3,3),pad=(0,1,0,1),stride=(2,2)),
             ResBlock(pyresnet.res2),
             ResBlock(pyresnet.res3),
             ResBlock(pyresnet.res4),
@@ -115,3 +117,5 @@ function (res::ResNet)(x)
     end
     return h, d
 end
+
+Flux.testmode!(resnet::ResNet) = Flux.testmode!(resnet.layers)
