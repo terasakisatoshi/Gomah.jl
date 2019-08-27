@@ -34,10 +34,17 @@ with chainer.using_config('train', False):
 @testset "regression" begin
     num = 50
     myres = ResNet(num)
-    Flux.testmode!(myres, true)
+    Flux.testmode!.(myres.layers)
     img = reversedims(py"img")
-    @show size(img)
-    ret, d = myres(img)
+    @show size(img), typeof(img)
+    ret, name2data = myres(img)
+    for (i,name) in enumerate(myres.layer_names)
+        pyr = reversedims(py"pyret[$i-1].array")
+        flr = name2data[name]
+        @show name, size(flr)
+        @test size(pyr) == size(flr)
+        @show maximum(abs.(pyr .- flr))
+    end
     flidx = argmax(ret)
     flprob = 100ret[argmax(ret)]
     @show flidx,flprob
@@ -50,7 +57,7 @@ end
     img = reversedims(py"img")
     myres = ResNet(num)
     chainmodel = Chain(myres.layers...)
-    Flux.testmode!(chainmodel, true)
+    Flux.testmode!(chainmodel)
     @time chainmodel(img)
     @time chainmodel(img)
     @time chainmodel(img)
