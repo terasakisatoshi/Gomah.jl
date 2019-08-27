@@ -13,7 +13,7 @@ import numpy as np
 num = 50
 PyResNet = chainercv.links.model.resnet.ResNet
 resnet = PyResNet(num, pretrained_model = "imagenet")
-img=chainercv.utils.read_image("pineapple.png",np.float32)
+img=chainercv.utils.read_image("pineapple.png",dtype=np.float32,alpha="ignore")
 img=chainercv.transforms.resize(img,(224,224))
 _imagenet_mean = np.array(
             [123.15163084, 115.90288257, 103.0626238],
