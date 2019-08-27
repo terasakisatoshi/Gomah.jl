@@ -8,7 +8,7 @@ const PyResNet = chainercv.links.model.resnet.ResNet
 const resnet = PyResNet(50, pretrained_model = "imagenet")
 
 @testset "conv1.conv" begin
-    dummyX = 128 * rand(Float32, 1, 3, 10, 10)
+    dummyX = 128 * rand(Float32, 1, 3, 224, 224)
     pyconv1 = resnet.conv1.conv
     chret = reversedims(pyconv1(dummyX).array)
     flconv1 = ch2conv(pyconv1)
@@ -24,8 +24,7 @@ const resnet = PyResNet(50, pretrained_model = "imagenet")
 end
 
 @testset "conv1.bn" begin
-    dummyX = rand(Float32,(1, 64,10,10))
-    dummyX = zeros(Float32,(1,64,10,10))
+    dummyX = rand(Float32,(1, 64,224,224))
     pybn = resnet.conv1.bn
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(pybn(dummyX).array)
@@ -38,29 +37,31 @@ end
     end
 end
 
-
-@testset "bn parameter test" begin
-    dummyX = rand(Float32,(1, 64,10,10))
-    dummyX = zeros(Float32,(1,64,10,10))
-    pybn = resnet.conv1.bn
+@testset "Conv2DBNActiv" begin
+    dummyX = rand(Float32, (1, 3, 224, 224)) 
+    pyconv1 = resnet.conv1
+    flconv1 = Conv2DBNActiv(pyconv1)
+    Flux.testmode!(flconv1,true)
     @pywith chainer.using_config("train", false) begin
-        chret = reversedims(pybn(dummyX).array)
-        flbn = ch2bn(pybn)
-        Flux.testmode!(flbn, true)
-        flret = flbn(reversedims(dummyX))
-        
-        β = flbn.β 
-        γ = flbn.γ 
-        μ = flbn.μ 
-        σ² = flbn.σ²
-        ϵ = flbn.ϵ
-        @test isapprox(β, pybn.beta.array)
-        @test isapprox(γ, pybn.gamma.array)
-        @test isapprox(μ, pybn.avg_mean)
-        @test isapprox(σ², pybn.avg_var)
-        @test isapprox(ϵ, pybn.eps)
+        chret = reversedims(pyconv1(dummyX).array)
+        flret = flconv1(reversedims(dummyX))
+        @test size(flret) == size(chret)
+        @show maximum(abs.(flret-chret))
+        @test all(isapprox.(flret,chret,atol=1e-6))
     end
 end
 
 
-
+@testset "BottleNeckA" begin
+    dummyX = rand(Float32, (1,64, 56, 56))
+    pyres2 = resnet.res2
+    flres2 = ResBlock(pyres2)
+    Flux.testmode!(flres2, true)
+    @pywith chainer.using_config("train", false) begin
+        chret = reversedims(pyres2(dummyX).array)
+        flret = flres2(reversedims(dummyX))
+        @test size(flret) == size(chret)
+        @show maximum(abs.(flret-chret))
+        @test all(isapprox.(flret, chret, atol=1e-4))
+    end
+end
