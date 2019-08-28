@@ -38,7 +38,7 @@ with chainer.using_config('train', False):
     img = reversedims(py"img")
     @show size(img), typeof(img)
     ret, name2data = myres(img)
-    for (i,name) in enumerate(myres.layer_names)
+    for (i, name) in enumerate(myres.layer_names)
         pyr = reversedims(py"pyret[$i-1].array")
         flr = name2data[name]
         @show name, size(flr)
@@ -47,13 +47,13 @@ with chainer.using_config('train', False):
     end
     flidx = argmax(ret)
     flprob = 100ret[argmax(ret)]
-    @show flidx,flprob
-    @test Int(py"chidx") == flidx[1]-1
+    @show flidx, flprob
+    @test Int(py"chidx") == flidx[1] - 1
     @show Float32(py"chprob") - flprob
 end
 
 @testset "benchmark" begin
-    num=50
+    num = 50
     img = reversedims(py"img")
     myres = ResNet(num)
     chainmodel = Chain(myres.layers...)
