@@ -24,7 +24,7 @@ const resnet = PyResNet(50, pretrained_model = "imagenet")
 end
 
 @testset "conv1.bn" begin
-    dummyX = rand(Float32,(1, 64,224,224))
+    dummyX = rand(Float32, (1, 64, 224, 224))
     pybn = resnet.conv1.bn
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(pybn(dummyX).array)
@@ -38,32 +38,32 @@ end
 end
 
 @testset "Conv2DBNActiv" begin
-    dummyX = rand(Float32, (1, 3, 224, 224)) 
+    dummyX = rand(Float32, (1, 3, 224, 224))
     pyconv1 = resnet.conv1
     flconv1 = Conv2DBNActiv(pyconv1)
-    Flux.testmode!(flconv1,true)
+    Flux.testmode!(flconv1, true)
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(pyconv1(dummyX).array)
         flret = flconv1(reversedims(dummyX))
         @test size(flret) == size(chret)
-        @show maximum(abs.(flret-chret))
-        @test all(isapprox.(flret,chret,atol=1e-6))
+        @show maximum(abs.(flret - chret))
+        @test all(isapprox.(flret, chret, atol = 1e-6))
     end
 end
 
 @testset "Pool1" begin
-    dummyX = rand(Float32, (1,64, 112, 112))
+    dummyX = rand(Float32, (1, 64, 112, 112))
     pypool1 = resnet.pool1
     flpool1 = MaxPool((3, 3), pad = (0, 1, 0, 1), stride = (2, 2))
     chret = reversedims(pypool1(dummyX).array)
     flret = flpool1(reversedims(dummyX))
     @test size(flret) == size(chret)
-    @show maximum(abs.(flret-chret))
-    @test all(isapprox.(flret, chret, atol=1e-4))
+    @show maximum(abs.(flret - chret))
+    @test all(isapprox.(flret, chret, atol = 1e-4))
 end
 
 @testset "BottleNeckA" begin
-    dummyX = rand(Float32, (1,64, 56, 56))
+    dummyX = rand(Float32, (1, 64, 56, 56))
     pyres2A = resnet.res2.a
     flres2A = BottleNeckA(pyres2A)
     Flux.testmode!(flres2A, true)
@@ -71,13 +71,13 @@ end
         chret = reversedims(pyres2A(dummyX).array)
         flret = flres2A(reversedims(dummyX))
         @test size(flret) == size(chret)
-        @show maximum(abs.(flret-chret))
-        @test all(isapprox.(flret, chret, atol=1e-4))
+        @show maximum(abs.(flret - chret))
+        @test all(isapprox.(flret, chret, atol = 1e-4))
     end
 end
 
 @testset "ResBlock2" begin
-    dummyX = rand(Float32, (1,64, 56, 56))
+    dummyX = rand(Float32, (1, 64, 56, 56))
     pyres2 = resnet.res2
     flres2 = ResBlock(pyres2)
     Flux.testmode!(flres2, true)
@@ -85,8 +85,8 @@ end
         chret = reversedims(pyres2(dummyX).array)
         flret = flres2(reversedims(dummyX))
         @test size(flret) == size(chret)
-        @show maximum(abs.(flret-chret))
-        @test all(isapprox.(flret, chret, atol=1e-4))
+        @show maximum(abs.(flret - chret))
+        @test all(isapprox.(flret, chret, atol = 1e-4))
     end
 end
 
@@ -99,7 +99,7 @@ end
         chret = reversedims(pyres3(dummyX).array)
         flret = flres3(reversedims(dummyX))
         @test size(flret) == size(chret)
-        @show maximum(abs.(flret-chret))
-        @test all(isapprox.(flret, chret, atol=1e-4))
+        @show maximum(abs.(flret - chret))
+        @test all(isapprox.(flret, chret, atol = 1e-4))
     end
 end

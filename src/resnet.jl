@@ -4,8 +4,6 @@ using Gomah: chainercv
 
 activations = Dict("relu" => Flux.relu)
 
-
-
 struct Conv2DBNActiv
     conv
     bn
@@ -18,7 +16,7 @@ struct Conv2DBNActiv
             #activ = Flux.relu
         end
         bn = ch2bn(link.bn, activ)
-        new(conv,bn)        
+        new(conv, bn)
     end
 end
 
@@ -27,9 +25,7 @@ function Flux.testmode!(c::Conv2DBNActiv)
     Flux.testmode!(c.bn)
 end
 
-function (layer::Conv2DBNActiv)(x)
-    x |> layer.conv |> layer.bn
-end
+(layer::Conv2DBNActiv)(x) = layer.bn(layer.conv(x))
 
 struct BottleNeckA
     layers
@@ -70,7 +66,7 @@ function (bottleneckB::BottleNeckB)(x)
     Flux.relu.(h .+ x)
 end
 
-Flux.testmode!(bottleneck::BottleNeckB)=Flux.testmode!(bottleneck.chain)
+Flux.testmode!(bottleneck::BottleNeckB) = Flux.testmode!(bottleneck.chain)
 
 function ResBlock(link)
     layers = Any[]
@@ -95,7 +91,7 @@ struct ResNet
         @show pyresnet.layer_names
         layers = [
             Conv2DBNActiv(pyresnet.conv1),
-            MaxPool((3,3),pad=(0,1,0,1),stride=(2,2)),
+            MaxPool((3, 3), pad = (0, 1, 0, 1), stride = (2, 2)),
             ResBlock(pyresnet.res2),
             ResBlock(pyresnet.res3),
             ResBlock(pyresnet.res4),

@@ -13,13 +13,13 @@ function test_ch2dense()
     OUTSIZE = 20
     BSIZE = 1
     chlinear = L.Linear(in_size = INSIZE, out_size = OUTSIZE)
-    dummyX = 128*np.ones((BSIZE, INSIZE), dtype=np.float32)
-    dtype= chret = reversedims(chlinear(dummyX).array)
+    dummyX = 128 * np.ones((BSIZE, INSIZE), dtype = np.float32)
+    dtype = chret = reversedims(chlinear(dummyX).array)
     fldense = ch2dense(chlinear)
     flret = fldense(reversedims(dummyX))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
-    @show typeof.((fldense.W,fldense.b))
+    @show typeof.((fldense.W, fldense.b))
     @test all(isapprox.(flret, chret))
 end
 
@@ -41,13 +41,13 @@ function test_ch2conv()
         stride = s,
     )
     # pass dummy data to create computation graph
-    dummyX = np.ones((BSIZE, INCH, inH, inW),dtype=np.float32)
+    dummyX = np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
     chret = reversedims(chconv(dummyX).array)
     flconv = ch2conv(chconv)
     flret = flconv(ones(DTYPE, inW, inH, INCH, BSIZE))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
-    @show typeof.((flconv.weight,flconv.bias))
+    @show typeof.((flconv.weight, flconv.bias))
     @test all(isapprox.(flret, chret))
 end
 
@@ -67,16 +67,16 @@ function test_ch2conv_nobias()
         stride = s,
         in_channels = INCH,
         out_channels = OUTCH,
-        nobias=true,
+        nobias = true,
     )
     # pass dummy data to create computation graph
-    dummyX = 128*np.ones((BSIZE, INCH, inH, inW),dtype=np.float32)
+    dummyX = 128 * np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
     chret = reversedims(chconv(dummyX).array)
     flconv = ch2conv(chconv)
     flret = flconv(reversedims(dummyX))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
-    @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
+    @test all(isapprox.(abs.(flret - chret), 0, atol = 1e-4))
 end
 
 function test_resnetconv1ch2conv()
@@ -95,16 +95,16 @@ function test_resnetconv1ch2conv()
         stride = s,
         in_channels = INCH,
         out_channels = OUTCH,
-        nobias=true,
+        nobias = true,
     )
     # pass dummy data to create computation graph
-    dummyX = 128*np.ones((BSIZE, INCH, inH, inW),dtype=np.float32)
+    dummyX = 128 * np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
     chret = reversedims(chconv(dummyX).array)
     flconv = ch2conv(chconv)
     flret = flconv(reversedims(dummyX))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
-    @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
+    @test all(isapprox.(abs.(flret - chret), 0, atol = 1e-4))
 end
 
 function test_ch2dwconv()
@@ -125,20 +125,20 @@ function test_ch2dwconv()
         stride = s
     )
     # pass dummy data to create computation graph
-    dummyX = 128*np.ones((BSIZE, INCH, inH, inW),dtype=np.float32)
+    dummyX = 128 * np.ones((BSIZE, INCH, inH, inW), dtype = np.float32)
     chret = reversedims(chdwconv(dummyX).array)
     fldwconv = ch2dwconv(chdwconv)
     flret = fldwconv(reversedims(dummyX))
     @test size(flret) == size(chret)
     @show maximum(abs.(flret .- chret))
-    @show typeof.((fldwconv.weight,fldwconv.bias))
-    @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
+    @show typeof.((fldwconv.weight, fldwconv.bias))
+    @test all(isapprox.(abs.(flret - chret), 0, atol = 1e-4))
 end
 
 function test_ch2bn()
     SIZE = 10
     BSIZE = 1
-    dummyX = 128*np.ones((BSIZE, SIZE),dtype=np.float32)
+    dummyX = 128 * np.ones((BSIZE, SIZE), dtype = np.float32)
     chbn = L.BatchNormalization(size = SIZE)
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(chbn(dummyX).array)
@@ -147,30 +147,30 @@ function test_ch2bn()
         flret = flbn(reversedims(dummyX))
         @test size(flret) == size(chret)
         @show maximum(abs.(flret .- chret))
-        @test all(isapprox.(abs.(flret-chret),0, atol=1e-4))
+        @test all(isapprox.(abs.(flret - chret), 0, atol = 1e-4))
     end
 end
 
 
 @testset "bn parameter test" begin
     PyResNet = chainercv.links.model.resnet.ResNet
-    num=50
+    num = 50
     pyresnet = PyResNet(num, pretrained_model = "imagenet")
-    dummyX = rand(Float32,(1, 64,10,10))
-    dummyX = zeros(Float32,(1,64,10,10))
+    dummyX = rand(Float32, (1, 64, 10, 10))
+    dummyX = zeros(Float32, (1, 64, 10, 10))
     pybn = pyresnet.conv1.bn
+    flbn = ch2bn(pybn)
+    Flux.testmode!(flbn, true)
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(pybn(dummyX).array)
-        flbn = ch2bn(pybn)
-        Flux.testmode!(flbn, true)
         flret = flbn(reversedims(dummyX))
-        
-        β = flbn.β 
-        γ = flbn.γ 
-        μ = flbn.μ 
+
+        β = flbn.β
+        γ = flbn.γ
+        μ = flbn.μ
         σ² = flbn.σ²
         ϵ = flbn.ϵ
-        @show typeof.((β,γ,μ,σ²,ϵ))
+        @show typeof.((β, γ, μ, σ², ϵ))
         @test isapprox(β, pybn.beta.array)
         @test isapprox(γ, pybn.gamma.array)
         @test isapprox(μ, pybn.avg_mean)
