@@ -27,9 +27,7 @@ function Flux.testmode!(c::Conv2DBNActiv)
     Flux.testmode!(c.bn)
 end
 
-function (layer::Conv2DBNActiv)(x)
-    x |> layer.conv |> layer.bn
-end
+(layer::Conv2DBNActiv)(x) = layer.bn(layer.conv(x))
 
 struct BottleNeckA
     layers
