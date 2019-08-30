@@ -26,11 +26,11 @@ end
 @testset "conv1.bn" begin
     dummyX = rand(Float32, (1, 64, 224, 224))
     pybn = resnet.conv1.bn
+    flbn = ch2bn(pybn)
     Flux.testmode!(flbn, true)
     flret = flbn(reversedims(dummyX))
     @pywith chainer.using_config("train", false) begin
         chret = reversedims(pybn(dummyX).array)
-        flbn = ch2bn(pybn)
         @show size(flret), size(chret)
         @test size(flret) == size(chret)
         @test all(isapprox.(flret, chret, atol = 1e-6))
@@ -42,9 +42,9 @@ end
     pyconv1 = resnet.conv1
     flconv1 = Conv2DBNActiv(pyconv1)
     Flux.testmode!(flconv1, true)
-    chret = reversedims(pyconv1(dummyX).array)
     flret = flconv1(reversedims(dummyX))
     @pywith chainer.using_config("train", false) begin
+        chret = reversedims(pyconv1(dummyX).array)
         @test size(flret) == size(chret)
         @show maximum(abs.(flret - chret))
         @test all(isapprox.(flret, chret, atol = 1e-6))
