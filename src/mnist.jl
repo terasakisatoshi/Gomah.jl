@@ -1,5 +1,6 @@
 import Random
 
+
 function get_mnist()
     mnist = chainer.datasets.mnist
     train, test = mnist.get_mnist()
@@ -28,7 +29,21 @@ function get_model()
     L.Classifier(basemodel())
 end
 
+"""
+    train()
+Train MNIST model.
 
+
+```julia
+julia> using Gomah
+# begin train
+julia> train()
+[...]
+#After training, you can test trained model.
+julia> predict()
+accuracy for test set = xx.yy [%]
+```
+"""
 function train()
     batchsize = 128
     epochs = 10
@@ -68,7 +83,13 @@ function train()
     trainer.run()
 end
 
+"""
+    predict()
+Test pre-trained model of MNIST
 
+After training, you can check accuracy for test set.
+See train()
+"""
 function predict()
     model = get_model()
     _, test_set = get_mnist()
