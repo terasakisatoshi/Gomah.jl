@@ -14,7 +14,7 @@ function test_ch2dense()
     BSIZE = 1
     chlinear = L.Linear(in_size = INSIZE, out_size = OUTSIZE)
     dummyX = 128 * np.ones((BSIZE, INSIZE), dtype = np.float32)
-    dtype = chret = reversedims(chlinear(dummyX).array)
+    chret = reversedims(chlinear(dummyX).array)
     fldense = ch2dense(chlinear)
     flret = fldense(reversedims(dummyX))
     @test size(flret) == size(chret)
