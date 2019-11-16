@@ -17,7 +17,7 @@ function ch2conv(link, σ = Flux.identity)
     W = reversedims(link.W.array)
     # flip kernel data
     W = W[end:-1:1, end:-1:1, :, :]
-    if py"hasattr"(link.b, :array)
+    if !isa(link.b, Nothing)
         b = reversedims(link.b.array)
     else
         b = zeros(DTYPE, size(W)[4])
@@ -32,7 +32,11 @@ function ch2dwconv(link, σ = Flux.identity)
     W = permutedims(link.W.array, (4, 3, 1, 2))
     # flip kernel data
     W = W[end:-1:1, end:-1:1, :, :]
-    b = reversedims(link.b.array)
+    if !isa(link.b, Nothing)
+        b = reversedims(link.b.array)
+    else
+        b = zeros(DTYPE, size(W)[4])
+    end
     pad = link.pad
     s = link.stride
     DepthwiseConv(W, b, σ, pad = pad, stride = s)
@@ -41,11 +45,11 @@ end
 function ch2bn(link, λ = Flux.identity)
     β = link.beta.array
     γ = link.gamma.array
-    ϵ = Float32(link.eps)
+    ϵ = DTYPE(link.eps)
     μ = link.avg_mean
     σ² = link.avg_var
     sz = size(μ)[1]
-    momentum = Float32(0.1) #unused parameter
+    momentum = DTYPE(0.1) #unused parameter
 
     #set `false` so as to BatchNorm works as test mode
     activate = false
